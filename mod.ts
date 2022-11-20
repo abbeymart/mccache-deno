@@ -8,7 +8,21 @@
  * Test case composition - see the test folder
  *
  * ```ts
- * import { assertEquals, assertNotEquals, postTestResult } from "https://deno.land/x/mcache/mod.ts";
+ *  // simple-cache
+ * import {
+ *   deleteCache,
+ *   getCache,
+ *   setCache,
+ * } from "https://deno.land/x/mccache/mod.ts";
+ *
+ * // hash-cache
+ * import {
+ *   deleteHashCache,
+ *   getHashCache,
+ *   setHashCache,
+ * } from "https://deno.land/x/mccache/mod.ts";
+ *
+ * // See the test folder for different test cases / scenarios and usage
  *
  * ```
  *
