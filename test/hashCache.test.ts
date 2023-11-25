@@ -37,7 +37,7 @@ const cacheValue: ObjectType = {
   await mcTest({
     name: "should set and return valid cacheValue",
     testFunc: () => {
-      const cacheParams: HashCacheParamsType = {
+      const cacheParams: HashCacheParamsType<ObjectType> = {
         key: cacheKey,
         hash: hashKey,
         value: cacheValue,
@@ -46,7 +46,7 @@ const cacheValue: ObjectType = {
       const cacheRes = setHashCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
         // get cache info
         const getCacheParams: QueryHashCacheParamsType = {
@@ -55,7 +55,7 @@ const cacheValue: ObjectType = {
         };
         const res = getHashCache(getCacheParams);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -89,7 +89,7 @@ const cacheValue: ObjectType = {
       "should set and return valid cacheValue -> before timeout/expiration)",
     testFunc: () => {
       // change the expiry time to 2 seconds
-      const cacheParams: HashCacheParamsType = {
+      const cacheParams: HashCacheParamsType<ObjectType> = {
         key: cacheKey,
         hash: hashKey,
         value: cacheValue,
@@ -98,7 +98,7 @@ const cacheValue: ObjectType = {
       const cacheRes = setHashCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
         const getCacheParams: QueryHashCacheParamsType = {
           key: cacheKey,
@@ -106,7 +106,7 @@ const cacheValue: ObjectType = {
         };
         const res = getHashCache(getCacheParams);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -115,7 +115,7 @@ const cacheValue: ObjectType = {
   });
 
   await mcTest({
-    name: "should return nil value after timeout/expiration",
+    name: "should return nil/undefined value after timeout/expiration",
     testFunc: async () => {
       await delay(3000);
       const getCacheParams: QueryHashCacheParamsType = {
@@ -124,7 +124,7 @@ const cacheValue: ObjectType = {
       };
       const res = getHashCache(getCacheParams);
       assertEquals(res.ok, false);
-      assertEquals(res.value, "");
+      assertEquals(!res.value, true );
       assertEquals(res.message, "cache expired and deleted");
     },
   });
@@ -134,7 +134,7 @@ const cacheValue: ObjectType = {
       "should set and return valid cacheValue (repeat prior to deleteCache testing",
     testFunc: () => {
       // change the expiry time to 10 seconds
-      const cacheParams: HashCacheParamsType = {
+      const cacheParams: HashCacheParamsType<ObjectType> = {
         key: cacheKey,
         hash: hashKey,
         value: cacheValue,
@@ -143,7 +143,7 @@ const cacheValue: ObjectType = {
       const cacheRes = setHashCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
         const getCacheParams: QueryHashCacheParamsType = {
           key: cacheKey,
@@ -151,7 +151,7 @@ const cacheValue: ObjectType = {
         };
         const res = getHashCache(getCacheParams);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -160,7 +160,7 @@ const cacheValue: ObjectType = {
   });
 
   await mcTest({
-    name: "should delete the cache and return nil/empty value",
+    name: "should delete the cache and return nil/undefined value",
     testFunc: () => {
       const delCacheParams: QueryHashCacheParamsType = {
         key: cacheKey,
@@ -176,7 +176,7 @@ const cacheValue: ObjectType = {
         };
         const res = getHashCache(getCacheParams);
         assertEquals(res.ok, false);
-        assertEquals(res.value, "");
+        assertEquals(!res.value, true );
         assertEquals(res.message, "cache info does not exist");
       } else {
         assertEquals(cacheRes.ok, false);

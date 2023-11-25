@@ -7,14 +7,14 @@ import {
 } from "./types.ts";
 
 // Initialise cache object/dictionary (map)
-const mcCache = new Map<string, HashCacheValueType>();
+// Initialise cache object/dictionary (map)
+// deno-lint-ignore no-explicit-any
+const mcCache = new Map<string, HashCacheValueType<any>>();
 
 // secret keyCode for added security
 const keyCode = "mcconnect_20200320";
 
-export function setHashCache(
-  cacheParams: HashCacheParamsType,
-): CacheResponseType {
+export function setHashCache<T>(cacheParams: HashCacheParamsType<T>): CacheResponseType<T> {
   // key and value: key:string, hash: string, value:Value, expire:time(seconds)
   const key = cacheParams.key || null;
   const hash = cacheParams.hash || null;
@@ -23,50 +23,40 @@ export function setHashCache(
   try {
     if (!key || !hash || !value) {
       return {
-        ok: false,
+        ok     : false,
         message: "cache key, hash and value are required",
-        value: "",
-      };
+      }
     }
     const cacheKey = JSON.stringify(key) + keyCode;
     const hashKey = JSON.stringify(hash) + keyCode;
 
     if (!mcCache.has(hashKey)) {
-      mcCache.set(hashKey, new Map<string, CacheValueType>());
+      mcCache.set(hashKey, new Map<string, CacheValueType<T>>());
     }
-    if (mcCache.has(hashKey) && !mcCache.get(hashKey)?.has(cacheKey)) {
-      mcCache.get(hashKey)?.set(cacheKey, {});
-    }
-    const hashValue = { value: value, expire: Date.now() + expire * 1000 };
+    const hashValue: CacheValueType<T> = {value: value, expire: Date.now() + expire * 1000};
     mcCache.get(hashKey)?.set(cacheKey, hashValue);
     return {
-      ok: true,
+      ok     : true,
       message: "task completed successfully",
-      value: mcCache.get(hashKey)?.get(cacheKey)?.value || "",
-    };
+      value  : mcCache.get(hashKey)?.get(cacheKey)?.value,
+    }
   } catch (e) {
     return {
-      ok: false,
-      message: e.message
-        ? e.message
-        : "error creating/setting cache information",
-      value: "",
-    };
+      ok     : false,
+      message: e.message ? e.message : "error creating/setting cache information",
+    }
   }
 }
 
-export function getHashCache(
-  cacheParams: QueryHashCacheParamsType,
-): CacheResponseType {
+export function getHashCache<T>(cacheParams: QueryHashCacheParamsType): CacheResponseType<T> {
   const key = cacheParams.key;
   const hash = cacheParams.hash;
   try {
     if (!key || !hash) {
       return {
-        ok: false,
+        ok     : false,
         message: "key and hash-key are required",
-        value: "",
-      };
+      }
     }
     const cacheKey = JSON.stringify(key) + keyCode;
     const hashKey = JSON.stringify(hash) + keyCode;
@@ -75,98 +65,84 @@ export function getHashCache(
       const cValue = mcCache.get(hashKey)?.get(cacheKey);
       if (cValue && cValue.expire && cValue.expire > Date.now()) {
         return {
-          ok: true,
+          ok     : true,
           message: "task completed successfully",
-          value: mcCache.get(hashKey)?.get(cacheKey)?.value || "",
-        };
+          value  : cValue.value,
+        }
       } else {
         // delete expired cache
-        mcCache.get(hashKey)?.delete(cacheKey);
+        mcCache.get(hashKey)?.delete((cacheKey));
         return {
-          ok: false,
+          ok     : false,
           message: "cache expired and deleted",
-          value: "",
-        };
+        }
       }
     } else {
       return {
-        ok: false,
+        ok     : false,
         message: "cache info does not exist",
-        value: "",
-      };
+      }
     }
   } catch (e) {
     return {
-      ok: false,
+      ok     : false,
       message: e.message ? e.message : "error fetching cache information",
-      value: "",
-    };
+    }
   }
 }
 
-export function deleteHashCache(
-  cacheParams: QueryHashCacheParamsType,
-): CacheResponseType {
+export function deleteHashCache<T>(cacheParams: QueryHashCacheParamsType): CacheResponseType<T> {
   const key = cacheParams.key;
   const hash = cacheParams.hash;
-  const by = cacheParams.by || "key";
+  const by = cacheParams.by || "key"
   try {
     if ((!key || !hash) && by === "key") {
       return {
-        ok: false,
+        ok     : false,
         message: "key and hash-key are required",
-        value: "",
-      };
+      }
     }
     const cacheKey = JSON.stringify(key) + keyCode;
     const hashKey = JSON.stringify(hash) + keyCode;
-    if (key && by === "hash" && mcCache.has(hashKey)) {
+    if (hash && by === "hash" && mcCache.has(hashKey)) {
       mcCache.delete(hashKey);
       return {
-        ok: true,
+        ok     : true,
         message: "task completed successfully",
-        value: "",
-      };
+      }
       // key != "" and hash != "" and by == "hash" and mcCache.hasKey(cacheKey) and mcCache[cacheKey].hasKey(hashKey)
-    } else if (
-      key && hash && by === "key" && mcCache.get(hashKey)?.has(cacheKey)
-    ) {
+    } else if (by === "key" && mcCache.get(hashKey)?.has(cacheKey)) {
       mcCache.get(hashKey)?.delete(cacheKey);
       return {
-        ok: true,
+        ok     : true,
         message: "task completed successfully",
-        value: "",
-      };
+      }
     } else {
       return {
-        ok: false,
+        ok     : false,
         message: "task could not be completed due to incomplete inputs",
-        value: "",
-      };
+      }
     }
   } catch (e) {
     return {
-      ok: false,
+      ok     : false,
       message: e.message ? e.message : "error deleting cache information",
-      value: "",
-    };
+    }
   }
 }
 
-export function clearHashCache(): CacheResponseType {
+export function clearHashCache<T>(): CacheResponseType<T> {
   try {
     // clear the cache object/dictionary (map)
     mcCache.clear();
     return {
-      ok: true,
+      ok     : true,
       message: "task completed successfully",
-      value: "",
-    };
+    }
   } catch (e) {
     return {
-      ok: false,
+      ok     : false,
       message: e.message ? e.message : "error clearing the cache",
-      value: "",
-    };
+    }
   }
 }

@@ -12,38 +12,38 @@ export interface ObjectType {
   [key: string]: ValueType;
 }
 
-export type ObjectKeyType = string | Record<string, unknown> | number;
+export type CacheKeyType = string | Record<string, unknown> | number | ObjectType
 
-export interface CacheParamsType {
-  key: ObjectKeyType;
-  value: ValueType | ObjectType;
+export interface CacheParamsType<T> {
+  key: CacheKeyType;
+  value: T;
   expire?: number;
 }
 
-export interface HashCacheParamsType {
-  key: ObjectKeyType;
-  hash: ObjectKeyType;
-  value: ValueType | ObjectType;
+export interface HashCacheParamsType<T> {
+  key: CacheKeyType;
+  hash: CacheKeyType;
+  value: T;
   expire?: number;
 }
 
-export type ByType = "hash" | "key";
+export type ByType = "hash" | "key"
 
 export interface QueryHashCacheParamsType {
-  key: ObjectKeyType;
-  hash: ObjectKeyType;
+  key: CacheKeyType;
+  hash: CacheKeyType;
   by?: ByType;
 }
 
-export interface CacheValueType {
-  value?: ValueType;
-  expire?: number;
+export interface CacheValueType<T> {
+  value: T;
+  expire: number;
 }
 
-export interface CacheResponseType {
+export interface CacheResponseType<T> {
   ok: boolean;
   message: string;
-  value: ValueType;
+  value?: T;
 }
 
-export type HashCacheValueType = Map<string, CacheValueType>;
+export type HashCacheValueType<T> = Map<string, CacheValueType<T>>;

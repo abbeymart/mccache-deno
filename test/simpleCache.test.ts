@@ -8,7 +8,7 @@
 import { assertEquals, delay, mcTest, postTestResult } from "../test_deps.ts";
 
 import {
-  CacheParamsType,
+  CacheParamsType, CacheResponseType,
   clearCache,
   deleteCache,
   getCache,
@@ -32,7 +32,7 @@ const cacheValue: ObjectType = {
   await mcTest({
     name: "should set and return valid cacheValue",
     testFunc: () => {
-      const cacheParams: CacheParamsType = {
+      const cacheParams: CacheParamsType<ObjectType> = {
         key: cacheKey,
         value: cacheValue,
         expire: expiryTime,
@@ -40,12 +40,12 @@ const cacheValue: ObjectType = {
       const cacheRes = setCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
         // get cache info
         const res = getCache(cacheKey);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -75,7 +75,7 @@ const cacheValue: ObjectType = {
       "should set and return valid cacheValue -> before timeout/expiration)",
     testFunc: () => {
       // change the expiry time to 2 seconds
-      const cacheParams: CacheParamsType = {
+      const cacheParams: CacheParamsType<ObjectType> = {
         key: cacheKey,
         value: cacheValue,
         expire: 2,
@@ -83,11 +83,11 @@ const cacheValue: ObjectType = {
       const cacheRes = setCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
         const res = getCache(cacheKey);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -96,12 +96,12 @@ const cacheValue: ObjectType = {
   });
 
   await mcTest({
-    name: "should return nil value after timeout/expiration",
+    name: "should return nil/undefined value after timeout/expiration",
     testFunc: async () => {
       await delay(3000);
       const res = getCache(cacheKey);
       assertEquals(res.ok, false);
-      assertEquals(res.value, "");
+      assertEquals(!res.value, true );
       assertEquals(res.message, "cache expired and deleted");
     },
   });
@@ -111,7 +111,7 @@ const cacheValue: ObjectType = {
       "should set and return valid cacheValue (repeat prior to deleteCache testing",
     testFunc: () => {
       // change the expiry time to 10 seconds
-      const cacheParams: CacheParamsType = {
+      const cacheParams: CacheParamsType<ObjectType> = {
         key: cacheKey,
         value: cacheValue,
         expire: 10,
@@ -119,11 +119,11 @@ const cacheValue: ObjectType = {
       const cacheRes = setCache(cacheParams);
       if (cacheRes.ok) {
         assertEquals(cacheRes.ok, true);
-        assertEquals(cacheRes.value, cacheValue);
+        assertEquals(cacheRes.value as ObjectType, cacheValue);
         assertEquals(cacheRes.message, "task completed successfully");
-        const res = getCache(cacheKey);
+        const res: CacheResponseType<ObjectType> = getCache(cacheKey);
         assertEquals(res.ok, true);
-        assertEquals(res.value, cacheValue);
+        assertEquals(res.value as ObjectType, cacheValue);
         assertEquals(res.message, "task completed successfully");
       } else {
         assertEquals(cacheRes.ok, false);
@@ -132,7 +132,7 @@ const cacheValue: ObjectType = {
   });
 
   await mcTest({
-    name: "should delete the cache and return nil/empty value",
+    name: "should delete the cache and return nil/undefined value",
     testFunc: () => {
       const cacheRes = deleteCache(cacheKey);
       if (cacheRes.ok) {
@@ -140,7 +140,7 @@ const cacheValue: ObjectType = {
         assertEquals(cacheRes.message, "task completed successfully");
         const res = getCache(cacheKey);
         assertEquals(res.ok, false);
-        assertEquals(res.value, "");
+        assertEquals(!res.value, true );
         assertEquals(res.message, "cache info does not exist");
       } else {
         assertEquals(cacheRes.ok, false);

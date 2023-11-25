@@ -26,14 +26,14 @@ import {
   deleteCache,
   getCache,
   setCache,
-} from "https://deno.land/x/mccache@v0.2.2/mod.ts";
+} from "https://deno.land/x/mccache@v0.3.0/mod.ts";
 
 // hash-cache
 import {
   deleteHashCache,
   getHashCache,
   setHashCache,
-} from "https://deno.land/x/mccache@v0.2.2/mod.ts";
+} from "https://deno.land/x/mccache@v0.3.0/mod.ts";
 
 // See the test folder for different test cases / scenarios and usage
 ```
