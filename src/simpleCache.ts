@@ -2,8 +2,9 @@ import {
     CacheKeyType,
     CacheParamsType,
     CacheResponseType,
-    CacheValueType, ValueType,
+    CacheValueType,
 } from "./types.ts";
+import type { ValueType } from "../deps.ts";
 
 // Initialise cache object/dictionary (map)
 // deno-lint-ignore no-explicit-any
@@ -39,7 +40,7 @@ export function setCache<T extends ValueType>(cacheParams: CacheParamsType<T>): 
     }
 }
 
-export function getCache<T>(key: CacheKeyType): CacheResponseType<T> {
+export function getCache<T extends ValueType>(key: CacheKeyType): CacheResponseType<T> {
     try {
         if (!key) {
             return {
@@ -78,7 +79,7 @@ export function getCache<T>(key: CacheKeyType): CacheResponseType<T> {
     }
 }
 
-export function deleteCache<T>(key: CacheKeyType): CacheResponseType<T> {
+export function deleteCache<T extends ValueType>(key: CacheKeyType): CacheResponseType<T> {
     try {
         if (!key) {
             return {
@@ -107,7 +108,7 @@ export function deleteCache<T>(key: CacheKeyType): CacheResponseType<T> {
     }
 }
 
-export function clearCache<T>(): CacheResponseType<T> {
+export function clearCache<T extends ValueType>(): CacheResponseType<T> {
     try {
         // clear the cache object/dictionary (map)
         mcCache.clear();

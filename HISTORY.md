@@ -1,5 +1,10 @@
 # Historical logs
 
+## Version 0.3.1
+
+- Release date: Nov 27, 2023
+- Applied-ValueType-from-mcresponse-for-consistency-v0.3.1
+
 ## Version 0.3.0
 
 - Release date: Nov 25, 2023
